@@ -1,0 +1,15 @@
+if TARGET_SBC030
+
+config SYS_CPU
+	default "mc680x0"
+
+config SYS_BOARD
+	default "sbc030"
+
+config SYS_VENDOR
+	default "pbinkowski"
+
+config SYS_CONFIG_NAME
+	default "SBC030"
+
+endif
