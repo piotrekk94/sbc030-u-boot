@@ -11,6 +11,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #ifdef	CONFIG_MC680x0
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
+	__asm__ __volatile__("reset");
 	return 0;
 };
 
