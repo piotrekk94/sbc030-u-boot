@@ -108,7 +108,7 @@ static void duart_serial_setbrg(void)
 
 static int duart_serial_tstc(void)
 {
-	return readReg(DUART_SR) & (1<<2);
+	return readReg(DUART_SR) & (1<<0);
 }
 
 static struct serial_device duart_serial_drv = {
