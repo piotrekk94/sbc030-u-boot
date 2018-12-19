@@ -38,14 +38,43 @@ static inline uint8_t readReg(uint8_t n){
 	return *reg;
 }
 
-static int duart_serial_init(void)
+static void duart_generic_setbrg(int baud)
 {
+	switch(baud){
+	case 1200:
+	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_CSR, 0x66);
+	break;
+	case 2400:
+	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_CSR, 0x88);
+	break;
+	case 4800:
+	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_CSR, 0x99);
+	break;
+	case 9600:
 	writeReg(DUART_ACR, 0x30);
 	writeReg(DUART_CSR, 0xBB);
+	break;
+	case 19200:
+	writeReg(DUART_ACR, 0xB0);
+	writeReg(DUART_CSR, 0xCC);
+	break;
+	case 38400:
+	default:
+	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_CSR, 0xCC);
+	break;
+	}
+}
+
+static int duart_serial_init(void)
+{
+	duart_generic_setbrg(CONFIG_BAUDRATE);
 	writeReg(DUART_MR1, 0x13);
 	writeReg(DUART_MR2, 0x07);
 	writeReg(DUART_CR, 0x05);
-
 
 	return 0;
 }
@@ -73,7 +102,8 @@ static int duart_serial_getc(void)
 
 static void duart_serial_setbrg(void)
 {
-
+	int baud = gd->baudrate;
+	duart_generic_setbrg(baud);
 }
 
 static int duart_serial_tstc(void)
