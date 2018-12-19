@@ -42,28 +42,28 @@ static void duart_generic_setbrg(int baud)
 {
 	switch(baud){
 	case 1200:
-	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_ACR, 0x60);
 	writeReg(DUART_CSR, 0x66);
 	break;
 	case 2400:
-	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_ACR, 0x60);
 	writeReg(DUART_CSR, 0x88);
 	break;
 	case 4800:
-	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_ACR, 0x60);
 	writeReg(DUART_CSR, 0x99);
 	break;
 	case 9600:
-	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_ACR, 0x60);
 	writeReg(DUART_CSR, 0xBB);
 	break;
 	case 19200:
-	writeReg(DUART_ACR, 0xB0);
+	writeReg(DUART_ACR, 0xE0);
 	writeReg(DUART_CSR, 0xCC);
 	break;
 	case 38400:
 	default:
-	writeReg(DUART_ACR, 0x30);
+	writeReg(DUART_ACR, 0x60);
 	writeReg(DUART_CSR, 0xCC);
 	break;
 	}

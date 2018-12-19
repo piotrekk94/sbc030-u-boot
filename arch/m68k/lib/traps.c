@@ -42,10 +42,10 @@ void trap_init(ulong value) {
 	unsigned long *vec = (ulong *)value;
 	int i;
 
-	for(i = 2; i < 25; i++) {
+	for(i = 2; i < 24; i++) {
 		vec[i] = (unsigned long)_exc_handler;
 	}
-	for(i = 25; i < 32; i++) {
+	for(i = 24; i < 32; i++) {
 		vec[i] = (unsigned long)_int_handler;
 	}
 	for(i = 32; i < 64; i++) {

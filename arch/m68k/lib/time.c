@@ -20,6 +20,62 @@ static volatile ulong timestamp = 0;
 #define CONFIG_SYS_WATCHDOG_FREQ (CONFIG_SYS_HZ / 2)
 #endif
 
+#if defined(CONFIG_DUART)
+
+#define DUART_BASE 0x30000000
+#define DUART_IMR 11
+#define DUART_CTUR 13
+#define DUART_CTLR 15
+#define DUART_START 29
+#define DUART_STOP 31
+
+static inline void writeReg(uint8_t n, uint8_t data){
+	volatile uint8_t *reg = (uint8_t*)(DUART_BASE + n);
+	*reg = data;
+}
+
+static inline uint8_t readReg(uint8_t n){
+	volatile uint8_t *reg = (uint8_t*)(DUART_BASE + n);
+	return *reg;
+}
+
+void __udelay(unsigned long usec)
+{
+	ulong base = timestamp;
+	ulong delay = (usec / 1000) ? (usec / 1000) : 1;
+	while((base + delay) > timestamp);
+}
+
+void duart_interrupt(void *not_used)
+{
+	timestamp++;
+	readReg(DUART_STOP);
+}
+
+int timer_init(void)
+{
+	timestamp = 0;
+
+	for(int i = 0; i < 64; i++)
+		irq_install_handler(i, duart_interrupt, 0);
+
+	uint16_t divisor = 3686;
+
+	writeReg(DUART_IMR, 0x08);
+	writeReg(DUART_CTUR, divisor >> 8);
+	writeReg(DUART_CTLR, divisor);
+	readReg(DUART_START);
+
+	return 0;
+}
+
+ulong get_timer(ulong base)
+{
+	return (timestamp - base);
+}
+
+#endif /* CONFIG_DUART */
+
 #if defined(CONFIG_MCFTMR)
 #ifndef CONFIG_SYS_UDELAY_BASE
 #	error	"uDelay base not defined!"
