@@ -21,7 +21,7 @@ int checkboard(void)
 
 int dram_init(void)
 {
-	gd->ram_size = 512 * 1024 - CONFIG_SYS_INIT_RAM_SIZE;
+	gd->ram_size = 128 * 1024 * 1024;
 
 	return 0;
 };
