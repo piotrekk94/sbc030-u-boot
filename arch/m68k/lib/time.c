@@ -58,7 +58,7 @@ int timer_init(void)
 
 	irq_install_handler(24, duart_interrupt, 0);
 
-	uint16_t divisor = 3686;
+	uint16_t divisor = 3686 / 2;
 
 	writeReg(DUART_IMR, 0x08);
 	writeReg(DUART_CTUR, divisor >> 8);
