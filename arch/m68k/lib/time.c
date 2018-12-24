@@ -56,8 +56,7 @@ int timer_init(void)
 {
 	timestamp = 0;
 
-	for(int i = 0; i < 64; i++)
-		irq_install_handler(i, duart_interrupt, 0);
+	irq_install_handler(24, duart_interrupt, 0);
 
 	uint16_t divisor = 3686;
 
