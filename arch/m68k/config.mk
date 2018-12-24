@@ -13,4 +13,4 @@ PLATFORM_CPPFLAGS += -D__M68K__
 PLATFORM_LDFLAGS  += -n
 PLATFORM_RELFLAGS += -ffunction-sections -fdata-sections
 PLATFORM_RELFLAGS += -ffixed-d7 -msep-data
-LDFLAGS_FINAL                  += --gc-sections
+LDFLAGS_FINAL     += --gc-sections
