@@ -26,10 +26,14 @@ int dram_init(void)
 	return 0;
 };
 
-int testdram(void)
+ulong board_flash_get_legacy(ulong base, int banknum, flash_info_t *info)
 {
-	/* TODO: XXX XXX XXX */
-	printf("DRAM test not implemented!\n");
-
-	return 0;
+	if (banknum == 0) {	/* non-CFI boot flash */
+		info->portwidth = FLASH_CFI_8BIT;
+		info->chipwidth = FLASH_CFI_BY8;
+		info->interface = FLASH_CFI_X8;
+		return 1;
+	} else {
+		return 0;
+	}
 }
