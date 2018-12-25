@@ -18,11 +18,9 @@ int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 #if defined(CONFIG_DISPLAY_CPUINFO)
 int print_cpuinfo(void)
 {
-	char buf1[32], buf2[32];
+	char buf[32];
 
-	printf("CPU:   Motorola MC68030\n"
-	       "       CPU CLK %s MHz\n",
-	       strmhz(buf1, gd->cpu_clk));
+	printf("CPU:   Motorola MC68030 @ %s MHz\n", strmhz(buf, gd->cpu_clk));
 	return 0;
 };
 #endif /* CONFIG_DISPLAY_CPUINFO */
