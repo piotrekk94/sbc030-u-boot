@@ -26,6 +26,7 @@ int dram_init(void)
 	return 0;
 };
 
+#ifdef CONFIG_FLASH_CFI_LEGACY
 ulong board_flash_get_legacy(ulong base, int banknum, flash_info_t *info)
 {
 	if (banknum == 0) {	/* non-CFI boot flash */
@@ -37,3 +38,4 @@ ulong board_flash_get_legacy(ulong base, int banknum, flash_info_t *info)
 		return 0;
 	}
 }
+#endif /* CONFIG_FLASH_CFI_LEGACY */
