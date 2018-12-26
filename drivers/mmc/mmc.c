@@ -1626,7 +1626,7 @@ static const struct mode_width_tuning sd_modes_by_pref[] = {
 
 static int sd_select_mode_and_width(struct mmc *mmc, uint card_caps)
 {
-	int err;
+	int err = 0;
 	uint widths[] = {MMC_MODE_4BIT, MMC_MODE_1BIT};
 	const struct mode_width_tuning *mwt;
 #if CONFIG_IS_ENABLED(MMC_UHS_SUPPORT)
