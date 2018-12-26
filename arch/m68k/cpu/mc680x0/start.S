@@ -36,7 +36,7 @@
  */
 _vectors:
 .long	0x00000000		/* Flash offset is 0 until we setup CS0 */
-#if defined(CONFIG_M5282) && (CONFIG_SYS_TEXT_BASE == CONFIG_SYS_INT_FLASH_BASE)
+#if (defined(CONFIG_M5282) && (CONFIG_SYS_TEXT_BASE == CONFIG_SYS_INT_FLASH_BASE)) || defined(CONFIG_MC680x0)
 .long	_start - CONFIG_SYS_TEXT_BASE
 #else
 .long	_START
@@ -88,6 +88,13 @@ _start:
 	nop
 	move.w	#0x2700,%sr
 
+	move.l #CONFIG_SYS_TEXT_BASE, %a0
+	move.l #__init_end, %a1
+	move.l #0, %a2
+1:
+	move.b (%a2)+, (%a0)+
+	cmp.l %a0, %a1
+	bne.s 1b	
 
 	/*
 	 * if we come from a pre-loader we have no exception table and
