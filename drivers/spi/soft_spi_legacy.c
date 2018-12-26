@@ -43,6 +43,10 @@ void spi_init (void)
 {
 }
 
+void spi_set_speed(struct spi_slave *slave, uint hz)
+{
+}
+
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 		unsigned int max_hz, unsigned int mode)
 {
@@ -142,20 +146,22 @@ int  spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 			tmpdin  = 0;
 		}
 
-		if (!cpha)
+		if (cpha) {
 			SPI_SCL(!cpol);
-		SPI_SDA(tmpdout & 0x80);
-		SPI_DELAY;
-		if (cpha)
+			SPI_SDA(tmpdout & 0x80);
+			SPI_SCL(cpol);
+			tmpdin	<<= 1;
+			tmpdin	|= SPI_READ;
+			tmpdout	<<= 1;
+		} else {
+			SPI_SDA(tmpdout & 0x80);
 			SPI_SCL(!cpol);
-		else
+			tmpdin	<<= 1;
+			tmpdin	|= SPI_READ;
+			tmpdout	<<= 1;
 			SPI_SCL(cpol);
-		tmpdin	<<= 1;
-		tmpdin	|= SPI_READ;
-		tmpdout	<<= 1;
-		SPI_DELAY;
-		if (cpha)
-			SPI_SCL(cpol);
+		}
+
 	}
 	/*
 	 * If the number of bits isn't a multiple of 8, shift the last
