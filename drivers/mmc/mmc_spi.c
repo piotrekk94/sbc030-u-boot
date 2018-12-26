@@ -53,16 +53,15 @@
 static uint mmc_spi_sendcmd(struct mmc *mmc, ushort cmdidx, u32 cmdarg)
 {
 	struct spi_slave *spi = mmc->priv;
-	u8 cmdo[7];
+	u8 cmdo[6];
 	u8 r1;
 	int i;
-	cmdo[0] = 0xff;
-	cmdo[1] = MMC_SPI_CMD(cmdidx);
-	cmdo[2] = cmdarg >> 24;
-	cmdo[3] = cmdarg >> 16;
-	cmdo[4] = cmdarg >> 8;
-	cmdo[5] = cmdarg;
-	cmdo[6] = (crc7(0, &cmdo[1], 5) << 1) | 0x01;
+	cmdo[0] = MMC_SPI_CMD(cmdidx);
+	cmdo[1] = cmdarg >> 24;
+	cmdo[2] = cmdarg >> 16;
+	cmdo[3] = cmdarg >> 8;
+	cmdo[4] = cmdarg;
+	cmdo[5] = (crc7(0, &cmdo[0], 5) << 1) | 0x01;
 	spi_xfer(spi, sizeof(cmdo) * 8, cmdo, NULL, 0);
 	for (i = 0; i < CTOUT; i++) {
 		spi_xfer(spi, 1 * 8, NULL, &r1, 0);
