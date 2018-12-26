@@ -138,7 +138,7 @@ int  spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 			if (txd)
 				tmpdout = *txd++;
 			else
-				tmpdout = 0;
+				tmpdout = 0xff;
 			if(j != 0) {
 				if (rxd)
 					*rxd++ = tmpdin;
