@@ -49,6 +49,7 @@ int board_late_init(void)
 {
 	unsigned char dir = 0;
 	dir |= PC7 | PC4 | PC2;
+	writeb(0xff, PIT_BASE + PCDR);
 	writeb(dir, PIT_BASE + PCDDR);
 	return 0;
 }
