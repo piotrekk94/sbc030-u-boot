@@ -735,6 +735,10 @@ static init_fnc_t init_sequence_r[] = {
 	arch_early_init_r,
 #endif
 	power_init_board,
+#if defined(CONFIG_M68K)
+	interrupt_init,
+	timer_init,		/* initialize timer */
+#endif
 #ifdef CONFIG_MTD_NOR_FLASH
 	initr_flash,
 #endif
@@ -791,11 +795,13 @@ static init_fnc_t init_sequence_r[] = {
 #ifdef CONFIG_CMD_KGDB
 	initr_kgdb,
 #endif
+#if !defined(CONFIG_M68K)
 	interrupt_init,
+#endif
 #ifdef CONFIG_ARM
 	initr_enable_interrupts,
 #endif
-#if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
+#if defined(CONFIG_MICROBLAZE)
 	timer_init,		/* initialize timer */
 #endif
 #if defined(CONFIG_LED_STATUS)
