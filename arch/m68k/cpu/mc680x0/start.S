@@ -36,8 +36,10 @@
  */
 _vectors:
 .long	0x00000000		/* Flash offset is 0 until we setup CS0 */
-#if (defined(CONFIG_M5282) && (CONFIG_SYS_TEXT_BASE == CONFIG_SYS_INT_FLASH_BASE)) || defined(CONFIG_MC680x0)
+#if (defined(CONFIG_M5282) && (CONFIG_SYS_TEXT_BASE == CONFIG_SYS_INT_FLASH_BASE))
 .long	_start - CONFIG_SYS_TEXT_BASE
+#elif (defined(CONFIG_MC680x0))
+.long	(_start - CONFIG_SYS_TEXT_BASE) + CONFIG_SYS_FLASH_BASE
 #else
 .long	_START
 #endif

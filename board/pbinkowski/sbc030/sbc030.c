@@ -14,7 +14,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#define PIT_BASE 0x20000000
+#define PIT_BASE 0xF4000000
 #define PCDDR 9
 #define PCDR 25
 

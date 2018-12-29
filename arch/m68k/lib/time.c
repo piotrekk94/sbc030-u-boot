@@ -22,7 +22,7 @@ static volatile ulong timestamp = 0;
 
 #if defined(CONFIG_DUART)
 
-#define DUART_BASE 0x30000000
+#define DUART_BASE 0xF0000000
 #define DUART_IMR 11
 #define DUART_CTUR 13
 #define DUART_CTLR 15
