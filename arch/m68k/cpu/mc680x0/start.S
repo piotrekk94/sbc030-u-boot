@@ -90,7 +90,7 @@ _start:
 
 	move.l #CONFIG_SYS_TEXT_BASE, %a0
 	move.l #__init_end, %a1
-	move.l #0, %a2
+	move.l #CONFIG_SYS_FLASH_BASE, %a2
 1:
 	move.b (%a2)+, (%a0)+
 	cmp.l %a0, %a1
