@@ -50,22 +50,6 @@
 #define CONFIG_ENV_SIZE			0x1000
 #define CONFIG_ENV_ADDR			(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_RAM_SIZE)
 
-#ifdef CONFIG_CMD_SPI
-
-#define SPI_DELAY			udelay(10)
-#define SPI_SDA(val)			sbc030_spi_sda(val)
-#define SPI_SCL(val)			sbc030_spi_scl(val)
-#define SPI_READ			sbc030_spi_read()
-#define CONFIG_MMC_SPI
-
-#ifndef __ASSEMBLY__
-void sbc030_spi_sda(int);
-void sbc030_spi_scl(int);
-unsigned char sbc030_spi_read(void);
-#endif
-
-#endif
-
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16
 
