@@ -11,6 +11,7 @@
 #include <config.h>
 #include <common.h>
 #include <spi.h>
+#include <netdev.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -53,6 +54,17 @@ int board_late_init(void)
 	writeb(dir, PIT_BASE + PCDDR);
 	return 0;
 }
+
+#ifdef CONFIG_CMD_NET
+int board_eth_init(bd_t *bis)
+{
+	int rc = 0;
+#ifdef CONFIG_ENC28J60
+	rc = enc28j60_initialize(1, 0, 80000000, 0);
+#endif
+	return rc;
+}
+#endif
 
 static void set_pin(unsigned char pin, unsigned char set)
 {
