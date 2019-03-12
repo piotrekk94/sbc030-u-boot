@@ -72,20 +72,17 @@ void dcache_enable(void)
 {
 	dcache_invalid();
 	*cf_dcache_status = 1;
-/*
 	ulong cacr;
 	__asm__ __volatile__("movec %%cacr, %0": "=r"(cacr));
 
 	cacr |= 0x0100;
 
 	__asm__ __volatile__("movec %0, %%cacr"::"r"(cacr));
-*/
 }
 
 void dcache_disable(void)
 {
 	*cf_dcache_status = 0;
-/*
 	ulong cacr;
 	__asm__ __volatile__("movec %%cacr, %0": "=r"(cacr));
 
@@ -93,19 +90,16 @@ void dcache_disable(void)
 
 	__asm__ __volatile__("movec %0, %%cacr"::"r"(cacr));
 	dcache_invalid();
-*/
 }
 
 void dcache_invalid(void)
 {
-/*
 	ulong cacr;
 	__asm__ __volatile__("movec %%cacr, %0": "=r"(cacr));
 
 	cacr |= 0x0800;
 
 	__asm__ __volatile__("movec %0, %%cacr"::"r"(cacr));
-*/
 }
 
 __weak void invalidate_dcache_range(unsigned long start, unsigned long stop)

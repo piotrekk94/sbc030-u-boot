@@ -122,6 +122,12 @@ _start:
 	/* setup stack initially on top of internal static ram  */
 	move.l	#(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_RAM_SIZE), %sp
 
+	/* configure transparent translation */
+	move.l #0xE01F8707, %d0
+	move.l %d0, -(%sp)
+	pmove (%sp), %tt0
+	move.l (%sp)+, %d0
+
 	/*
 	 * if configured, malloc_f arena will be reserved first,
 	 * then (and always) gd struct space will be reserved

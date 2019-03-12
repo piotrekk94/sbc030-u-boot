@@ -9,6 +9,7 @@
 void cpu_init_f(void)
 {
 	icache_enable();
+	dcache_enable();
 }
 
 /* initialize higher level parts of CPU like timers */
