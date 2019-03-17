@@ -53,11 +53,14 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"update=dhcp 0x1000 192.168.1.188:u-boot.bin && mtd erase nor0 && mtd write nor0 0x1000 && reset\0" \
 	"linux=dhcp 0x1000 192.168.1.188:linux.bin && boot68 $fileaddr $filesize 0 8000000 && dcache off && icache off && go 0x1000\0" \
+	"bootmenu_0=Boot Linux using TFTP=run linux\0" \
+	"bootmenu_1=Update U-Boot using TFTP=run update\0" \
+	"bootmenu_delay=2\0" \
 	"bootargs=root=/dev/ram0 rw earlyprintk\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
-	"run linux"
+	"bootmenu"
 
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16
