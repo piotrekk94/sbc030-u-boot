@@ -73,8 +73,8 @@ int do_boot68(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 	bi_addr += add_record(bi_addr, BI_MACHTYPE, SBC030_MACHTYPE);
 	bi_addr += add_record(bi_addr, BI_CPUTYPE, 2);
-	bi_addr += add_record(bi_addr, BI_MMUTYPE, 0);
-	bi_addr += add_record(bi_addr, BI_FPUTYPE, 2);
+	bi_addr += add_record(bi_addr, BI_FPUTYPE, 0);
+	bi_addr += add_record(bi_addr, BI_MMUTYPE, 2);
 	bi_addr += add_meminfo(bi_addr, BI_MEMCHUNK, mem_addr, mem_size);
 
 	if (argc > 6){
