@@ -51,12 +51,18 @@
 #define CONFIG_ENV_ADDR			(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_RAM_SIZE)
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"update=dhcp 0x1000 192.168.1.188:u-boot.bin && mtd erase nor0 && mtd write nor0 0x1000 && reset\0" \
-	"linux=dhcp 0x1000 192.168.1.188:linux.bin && boot68 $fileaddr $filesize 0 8000000 && dcache off && icache off && go 0x1000\0" \
+	"update=dhcp $kernel_addr 192.168.1.188:u-boot.bin && mtd erase nor0 && mtd write nor0 $kernel_addr && reset\0" \
+	"ramdisk=dhcp $ramdisk_addr 192.168.1.188:ramdisk.bin && setenv ramdisk_size $filesize\0" \
+	"kernel=dhcp $kernel_addr 192.168.1.188:linux.bin && setenv kernel_size $filesize\0" \
+	"ram_start=0\0" \
+	"ram_size=8000000\0" \
+	"ramdisk_addr=1000000\0" \
+	"kernel_addr=1000\0" \
+	"linux=run ramdisk && run kernel && boot68 $kernel_addr $kernel_size $ram_start $ram_size $ramdisk_addr $ramdisk_size && dcache off && icache off && go $kernel_addr\0" \
 	"bootmenu_0=Boot Linux using TFTP=run linux\0" \
 	"bootmenu_1=Update U-Boot using TFTP=run update\0" \
 	"bootmenu_delay=2\0" \
-	"bootargs=root=/dev/ram0 rw earlyprintk\0" \
+	"bootargs=console=ttyS0\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
