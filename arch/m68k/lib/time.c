@@ -32,40 +32,72 @@ static volatile ulong timestamp = 0;
 #define PIT_TSR 0x35
 #define PIT_PRESCALER 32
 
-static inline void writeReg(uint8_t n, uint8_t data){
+#define DUART_IMR 11
+#define DUART_ISR 11
+#define DUART_CTUR 13
+#define DUART_CTLR 15
+#define DUART_START 29
+#define DUART_STOP 31
+#define DUART_MAX_DELAY (unsigned long)(4.3*65535)
+
+static inline void writeRegPIT(uint8_t n, uint8_t data){
 	volatile uint8_t *reg = (uint8_t*)(CONFIG_SYS_PIT_BASE + n);
 	*reg = data;
 }
 
-static inline uint8_t readReg(uint8_t n){
-	volatile uint8_t *reg = (uint8_t*)(CONFIG_SYS_PIT_BASE + n);
+static inline void writeRegDUART(uint8_t n, uint8_t data){
+	volatile uint8_t *reg = (uint8_t*)(CONFIG_SYS_DUART_BASE + n);
+	*reg = data;
+}
+
+static inline uint8_t readRegDUART(uint8_t n){
+	volatile uint8_t *reg = (uint8_t*)(CONFIG_SYS_DUART_BASE + n);
 	return *reg;
 }
 
 void __udelay(unsigned long usec)
 {
-	ulong base = timestamp;
-	ulong delay = (usec / 1000) ? (usec / 1000) : 1;
-	while((base + delay) > timestamp);
+
+	if(usec > DUART_MAX_DELAY){
+		ulong base = timestamp;
+		ulong delay = usec / 10000;
+		while((base + delay) > timestamp);
+		usec -= delay * 10000;
+	}
+
+	if(usec > 200){
+		uint16_t divisor = (usec / 43) * 10;
+
+		writeRegDUART(DUART_CTUR, divisor >> 8);
+		writeRegDUART(DUART_CTLR, divisor);
+
+		readRegDUART(DUART_START);
+
+		while(!(readRegDUART(DUART_ISR) & 0x08));
+
+		readRegDUART(DUART_STOP);
+	}
 }
 
 void pit_interrupt(void *not_used)
 {
-	timestamp++;
-	writeReg(PIT_TSR, 0x01);
+	writeRegPIT(PIT_TSR, 0x01);
+	timestamp+=10;
 }
 
 int timer_init(void)
 {
 	timestamp = 0;
 
+	writeRegPIT(PIT_TCR, 0x00);
+
+	writeRegPIT(PIT_CPRH, 0);
+	writeRegPIT(PIT_CPRM, 0x04);
+	writeRegPIT(PIT_CPRL, 0x80);
+
 	irq_install_handler(CONFIG_SYS_PIT_IRQ, pit_interrupt, 0);
 
-	writeReg(PIT_CPRH, 0);
-	writeReg(PIT_CPRM, 0);
-	writeReg(PIT_CPRL, 115);
-
-	writeReg(PIT_TCR, 0xE1);
+	writeRegPIT(PIT_TCR, 0xE1);
 
 	return 0;
 }
