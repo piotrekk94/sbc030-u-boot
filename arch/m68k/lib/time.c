@@ -20,23 +20,33 @@ static volatile ulong timestamp = 0;
 #define CONFIG_SYS_WATCHDOG_FREQ (CONFIG_SYS_HZ / 2)
 #endif
 
-#if defined(CONFIG_DUART)
+#if defined(CONFIG_PIT)
 
-#define DUART_BASE 0xF0000000
-#define DUART_IMR 11
-#define DUART_CTUR 13
-#define DUART_CTLR 15
-#define DUART_START 29
-#define DUART_STOP 31
+#define PIT_TCR 0x21
+#define PIT_CPRH 0x27
+#define PIT_CPRM 0x29
+#define PIT_CPRL 0x2b
+#define PIT_CRH 0x2f
+#define PIT_CRM 0x31
+#define PIT_CRL 0x33
+#define PIT_TSR 0x35
+#define PIT_PRESCALER 32
 
 static inline void writeReg(uint8_t n, uint8_t data){
-	volatile uint8_t *reg = (uint8_t*)(DUART_BASE + n);
+	volatile uint8_t *reg = (uint8_t*)(CONFIG_SYS_PIT_BASE + n);
 	*reg = data;
 }
 
 static inline uint8_t readReg(uint8_t n){
-	volatile uint8_t *reg = (uint8_t*)(DUART_BASE + n);
+	volatile uint8_t *reg = (uint8_t*)(CONFIG_SYS_PIT_BASE + n);
 	return *reg;
+}
+
+static inline void setPreload(uint32_t preload)
+{
+	writeReg(PIT_CPRL, preload && 0xff);
+	writeReg(PIT_CPRM, (preload >> 8) && 0xff);
+	writeReg(PIT_CPRH, (preload >> 16) && 0xff);
 }
 
 void __udelay(unsigned long usec)
@@ -46,24 +56,23 @@ void __udelay(unsigned long usec)
 	while((base + delay) > timestamp);
 }
 
-void duart_interrupt(void *not_used)
+void pit_interrupt(void *not_used)
 {
 	timestamp++;
-	readReg(DUART_STOP);
+	writeReg(PIT_TSR, 0x01);
 }
 
 int timer_init(void)
 {
 	timestamp = 0;
 
-	irq_install_handler(25, duart_interrupt, 0);
+	irq_install_handler(CONFIG_SYS_PIT_IRQ, pit_interrupt, 0);
 
-	uint16_t divisor = 3686 / 2;
+	uint32_t preload = CONFIG_SYS_PIT_CLK / PIT_PRESCALER / CONFIG_SYS_HZ;
 
-	writeReg(DUART_IMR, 0x08);
-	writeReg(DUART_CTUR, divisor >> 8);
-	writeReg(DUART_CTLR, divisor);
-	readReg(DUART_START);
+	setPreload(preload);
+
+	writeReg(PIT_TCR, 0xE1);
 
 	return 0;
 }
