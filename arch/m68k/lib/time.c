@@ -42,13 +42,6 @@ static inline uint8_t readReg(uint8_t n){
 	return *reg;
 }
 
-static inline void setPreload(uint32_t preload)
-{
-	writeReg(PIT_CPRL, preload && 0xff);
-	writeReg(PIT_CPRM, (preload >> 8) && 0xff);
-	writeReg(PIT_CPRH, (preload >> 16) && 0xff);
-}
-
 void __udelay(unsigned long usec)
 {
 	ulong base = timestamp;
@@ -68,9 +61,9 @@ int timer_init(void)
 
 	irq_install_handler(CONFIG_SYS_PIT_IRQ, pit_interrupt, 0);
 
-	uint32_t preload = CONFIG_SYS_PIT_CLK / PIT_PRESCALER / CONFIG_SYS_HZ;
-
-	setPreload(preload);
+	writeReg(PIT_CPRH, 0);
+	writeReg(PIT_CPRM, 0);
+	writeReg(PIT_CPRL, 115);
 
 	writeReg(PIT_TCR, 0xE1);
 
