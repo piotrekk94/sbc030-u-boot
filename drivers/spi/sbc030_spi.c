@@ -30,7 +30,7 @@ void spi_set_speed(struct spi_slave *slave, uint hz)
 
 }
 
-static int sbc030_cs_is_valid(unsigned int bus, unsigned int cs)
+int spi_cs_is_valid(unsigned int bus, unsigned int cs)
 {
 	if((bus == 0 || bus == 1) && cs == 0)
 		return 1;
@@ -43,7 +43,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 {
 	struct sbc030_spi *ss;
 
-	if (!sbc030_cs_is_valid(bus, cs))
+	if (!spi_cs_is_valid(bus, cs))
 		return NULL;
 
 	ss = spi_alloc_slave(struct sbc030_spi, bus, cs);
@@ -75,12 +75,16 @@ void spi_release_bus(struct spi_slave *slave)
 
 }
 
-static void spi_set_cs(struct sbc030_spi *ss, unsigned int cs)
+void spi_cs_activate(struct spi_slave *slave)
 {
-	if(cs)
-		writeb(0x01, ss->base + SPI_CR);
-	else
-		writeb(0x00, ss->base + SPI_CR);
+	struct sbc030_spi *ss = to_sbc030_spi(slave);
+	writeb(0x00, ss->base + SPI_CR);
+}
+
+void spi_cs_deactivate(struct spi_slave *slave)
+{
+	struct sbc030_spi *ss = to_sbc030_spi(slave);
+	writeb(0x01, ss->base + SPI_CR);
 }
 
 static int spi_check_done(struct sbc030_spi *ss)
@@ -99,7 +103,7 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 		return -1;
 
 	if (flags & SPI_XFER_BEGIN)
-		spi_set_cs(ss, 0);
+		spi_cs_activate(slave);
 
 	for(int i = 0; i < bitlen / 8; i++) {
 
@@ -116,7 +120,7 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 	}
 
 	if (flags & SPI_XFER_END)
-		spi_set_cs(ss, 1);
+		spi_cs_deactivate(slave);
 
 	return(0);
 }
