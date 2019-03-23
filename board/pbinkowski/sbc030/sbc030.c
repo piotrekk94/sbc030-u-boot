@@ -39,7 +39,7 @@ int board_eth_init(bd_t *bis)
 {
 	int rc = 0;
 #ifdef CONFIG_ENC28J60
-	rc = enc28j60_initialize(1, 0, 80000000, 0);
+	rc = enc28j60_initialize(1, 0, 20000000, 0);
 #endif
 	return rc;
 }
