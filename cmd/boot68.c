@@ -1,5 +1,6 @@
 #include <common.h>
 #include <command.h>
+#include <image.h>
 
 #define BI_LAST		0
 #define BI_MACHTYPE	1
@@ -10,14 +11,15 @@
 #define BI_RAMDISK	6
 #define BI_COMMAND	7
 #define SBC030_MACHTYPE	14
+#define SBC030_CPUTYPE	2
+#define SBC030_MMUTYPE	2
+#define SBC030_FPUTYPE	0
 
-static u32 get_bi_addr(u32 addr, u32 size)
+DECLARE_GLOBAL_DATA_PTR;
+
+static u32 get_bi_addr(u32 addr)
 {
-	u32 ret = addr + size;
-
-	ret += (4096 - (ret % 4096));
-
-	return ret;
+	return addr + (4096 - (addr % 4096));
 }
 
 static u32 add_record(u32 bi_addr, u16 tag, u32 data)
@@ -54,44 +56,42 @@ static u32 add_bootargs(u32 bi_addr)
 
 int do_boot68(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
-	u32 img_addr, img_size;
 	u32 mem_addr, mem_size;
-	u32 initrd_addr, initrd_size;
 	u32 bi_addr;
+	int ret;
+	int states = BOOTM_STATE_START | BOOTM_STATE_FINDOS | BOOTM_STATE_FINDOTHER | BOOTM_STATE_LOADOS;
 
-	if (argc < 5)
-		return 1;
+	argc--; argv++;
 
-	img_addr = simple_strtoul(argv[1], NULL, 16);
-	img_size = simple_strtoul(argv[2], NULL, 16);
-	mem_addr = simple_strtoul(argv[3], NULL, 16);
-	mem_size = simple_strtoul(argv[4], NULL, 16);
+	ret = do_bootm_states(cmdtp, flag, argc, argv, states, &images, 1);
 
-	bi_addr = get_bi_addr(img_addr, img_size);
+	if(ret)
+		return ret;
 
-	printf("bi_addr: %x\n", bi_addr);
+	mem_addr = gd->bd->bi_memstart;
+	mem_size = gd->bd->bi_memsize;
+	bi_addr = get_bi_addr(images.os.load_end);
 
 	bi_addr += add_record(bi_addr, BI_MACHTYPE, SBC030_MACHTYPE);
-	bi_addr += add_record(bi_addr, BI_CPUTYPE, 2);
-	bi_addr += add_record(bi_addr, BI_FPUTYPE, 0);
-	bi_addr += add_record(bi_addr, BI_MMUTYPE, 2);
+	bi_addr += add_record(bi_addr, BI_CPUTYPE, SBC030_CPUTYPE);
+	bi_addr += add_record(bi_addr, BI_FPUTYPE, SBC030_FPUTYPE);
+	bi_addr += add_record(bi_addr, BI_MMUTYPE, SBC030_MMUTYPE);
 	bi_addr += add_meminfo(bi_addr, BI_MEMCHUNK, mem_addr, mem_size);
 
-	if (argc > 6){
-		initrd_addr = simple_strtoul(argv[5], NULL, 16);
-		initrd_size = simple_strtoul(argv[6], NULL, 16);
-		bi_addr += add_meminfo(bi_addr, BI_RAMDISK, initrd_addr, initrd_size);
-	}
+	if(images.rd_start != 0 && images.rd_end != 0)
+		bi_addr += add_meminfo(bi_addr, BI_RAMDISK, images.rd_start, images.rd_end - images.rd_start);
 
 	bi_addr += add_bootargs(bi_addr);
 	bi_addr += add_record(bi_addr, BI_LAST, 0);
+
+	goto *(void*)images.ep;
 
 	return 0;
 }
 
 #ifdef CONFIG_SYS_LONGHELP
 static char boot68_help_text[] =
-	"[img-addr img-size mem-addr mem-size [initrd-addr initrd-size]]\n"
+	"[kernel_addr initrd_addr]\n"
 	"    - boot Linux m68k binary stored in memory";
 #endif
 

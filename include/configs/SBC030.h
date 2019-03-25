@@ -56,18 +56,23 @@
 #define CONFIG_SYS_MAX_FLASH_SECT	128
 #define CONFIG_SYS_FLASH_BANKS_LIST	{ CONFIG_SYS_FLASH_BASE, }
 
-#define CONFIG_ENV_SIZE			0x1000
-#define CONFIG_ENV_ADDR			(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_RAM_SIZE)
+#ifdef CONFIG_ENV_IS_IN_NVRAM
+# define CONFIG_ENV_SIZE		0x1000
+# define CONFIG_ENV_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_RAM_SIZE)
+#endif
+
+#ifdef CONFIG_ENV_IS_IN_FLASH
+# define CONFIG_ENV_SECT_SIZE		0x1000
+# define CONFIG_ENV_OFFSET		(CONFIG_SYS_FLASH_SIZE - CONFIG_ENV_SECT_SIZE)
+#endif
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"update=dhcp $kernel_addr u-boot.bin && mtd erase nor0 && mtd write nor0 $kernel_addr && reset\0" \
-	"ramdisk=dhcp $ramdisk_addr ramdisk.bin && setenv ramdisk_size $filesize\0" \
-	"kernel=dhcp $kernel_addr linux.bin && setenv kernel_size $filesize\0" \
-	"ram_start=0\0" \
-	"ram_size=8000000\0" \
+	"ramdisk=dhcp $ramdisk_addr ramdisk.u\0" \
+	"kernel=dhcp $kernel_addr linux.u\0" \
 	"ramdisk_addr=1000000\0" \
-	"kernel_addr=1000\0" \
-	"linux=run ramdisk && run kernel && boot68 $kernel_addr $kernel_size $ram_start $ram_size $ramdisk_addr $ramdisk_size && dcache off && icache off && go $kernel_addr\0" \
+	"kernel_addr=2000000\0" \
+	"linux=run ramdisk && run kernel && boot68 $kernel_addr $ramdisk_addr\0" \
 	"bootmenu_0=Boot Linux using TFTP=run linux\0" \
 	"bootmenu_1=Update U-Boot using TFTP=run update\0" \
 	"bootmenu_delay=2\0" \
