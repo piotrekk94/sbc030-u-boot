@@ -77,12 +77,14 @@ int do_boot68(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	bi_addr += add_record(bi_addr, BI_FPUTYPE, SBC030_FPUTYPE);
 	bi_addr += add_record(bi_addr, BI_MMUTYPE, SBC030_MMUTYPE);
 	bi_addr += add_meminfo(bi_addr, BI_MEMCHUNK, mem_addr, mem_size);
-
-	if(images.rd_start != 0 && images.rd_end != 0)
-		bi_addr += add_meminfo(bi_addr, BI_RAMDISK, images.rd_start, images.rd_end - images.rd_start);
+	bi_addr += add_meminfo(bi_addr, BI_RAMDISK, images.rd_start, images.rd_end - images.rd_start);
 
 	bi_addr += add_bootargs(bi_addr);
 	bi_addr += add_record(bi_addr, BI_LAST, 0);
+
+	bootm_disable_interrupts();
+	icache_disable();
+	dcache_disable();
 
 	goto *(void*)images.ep;
 
