@@ -16,7 +16,7 @@
 
 #define CONFIG_SYS_LOAD_ADDR	0x00000000
 
-#define CONFIG_SYS_CLK		24000000 /* CPU Core Clock */
+#define CONFIG_SYS_CLK		32000000 /* CPU Core Clock */
 /*
  * Low Level Configuration Settings
  * (address mappings, register initial values, etc.)
@@ -69,37 +69,32 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"update_uboot=dhcp $kernel_addr u-boot.bin && " \
 		     "mtd erase nor0 && " \
-		     "mtd write nor0 $kernel_addr\0" \
-	"update_linux=sf probe 0 && " \
+		     "mtd write nor0 $kernel_addr 0 $filesize\0" \
+	"update_kernel=sf probe 0 && " \
 		     "mw.b $kernel_addr ff $kernel_size && " \
-		     "mw.b $ramdisk_addr ff $ramdisk_size && " \
 		     "run kernel_tftp && " \
-		     "run ramdisk_tftp && " \
-		     "mtd erase nor1 && " \
-		     "mtd write nor1 $kernel_addr 0 $kernel_size && " \
-		     "mtd write nor1 $ramdisk_addr $kernel_size $ramdisk_size\0" \
-	"ramdisk_sf=sf probe 0 && " \
-		   "mtd read nor1 $ramdisk_addr $kernel_size $ramdisk_size\0" \
+		     "mtd erase nor1 0 $kernel_size && " \
+		     "mtd write nor1 $kernel_addr 0 $kernel_size\0" \
 	"kernel_sf=sf probe 0 && " \
 		  "mtd read nor1 $kernel_addr 0 $kernel_size\0" \
 	"ramdisk_tftp=dhcp $ramdisk_addr ramdisk.u\0" \
 	"kernel_tftp=dhcp $kernel_addr linux.u\0" \
 	"ramdisk_addr=1000000\0" \
-	"ramdisk_size=100000\0" \
 	"kernel_addr=2000000\0" \
 	"kernel_size=200000\0" \
-	"linux_sf=run ramdisk_sf && " \
+	"linux_sf=run ubiargs && " \
 		 "run kernel_sf && " \
-		 "boot68 $kernel_addr $ramdisk_addr\0" \
+		 "boot68 $kernel_addr\0" \
 	"linux_tftp=run ramdisk_tftp && " \
 		   "run kernel_tftp && " \
 		   "boot68 $kernel_addr $ramdisk_addr\0" \
 	"bootmenu_0=Boot Linux using NOR=run linux_sf\0" \
 	"bootmenu_1=Boot Linux using TFTP=run linux_tftp\0" \
 	"bootmenu_2=Update U-Boot using TFTP=run update_uboot\0" \
-	"bootmenu_3=Update Linux using TFTP=run update_linux\0" \
+	"bootmenu_3=Update Kernel using TFTP=run update_kernel\0" \
 	"bootmenu_delay=2\0" \
-	"bootargs=console=ttyS0\0" \
+	"bootargs=console=tty0 console=ttyS0\0" \
+	"ubiargs=setenv bootargs $bootargs ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
