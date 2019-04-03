@@ -68,8 +68,11 @@
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"update_uboot=dhcp $kernel_addr u-boot.bin && " \
-		     "mtd erase nor0 && " \
+		     "mtd erase nor0 0 40000 && " \
 		     "mtd write nor0 $kernel_addr 0 $filesize\0" \
+	"update_font=dhcp e0083000 font.bin && " \
+		     "mtd erase nor0 $font_off 1000 && " \
+		     "mtd write nor0 e0083000 $font_off 1000\0" \
 	"update_kernel=sf probe 0 && " \
 		     "mw.b $kernel_addr ff $kernel_size && " \
 		     "run kernel_tftp && " \
@@ -82,6 +85,7 @@
 	"ramdisk_addr=1000000\0" \
 	"kernel_addr=2000000\0" \
 	"kernel_size=200000\0" \
+	"font_off=7f000\0" \
 	"linux_sf=run ubiargs && " \
 		 "run kernel_sf && " \
 		 "boot68 $kernel_addr\0" \
@@ -95,10 +99,11 @@
 	"bootmenu_delay=2\0" \
 	"bootargs=console=tty0 console=ttyS0\0" \
 	"ubiargs=setenv bootargs $bootargs ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs\0" \
+	"setup_disp=mw.b e0080000 0 1000 && mtd read nor0 e0083000 $font_off 1000\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
-	"bootmenu"
+	"run setup_disp && bootmenu"
 
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16
