@@ -38,61 +38,53 @@ static inline uint8_t readReg(uint8_t n){
 	return *reg;
 }
 
-static void duart_generic_setbrg(int baud)
+struct brg_spec {
+	int baud;
+	uint8_t cr1;
+	uint8_t cr2;
+	uint8_t acr;
+	uint8_t csr;
+};
+
+static struct brg_spec uart_brg_settings[] = {
+	{1200, 0x90, 0xb0, 0x30, 0x66},
+	{2400, 0x90, 0xb0, 0x30, 0x88},
+	{4800, 0x90, 0xb0, 0x30, 0x99},
+	{9600, 0x90, 0xb0, 0x30, 0xbb},
+	{19200, 0x90, 0xb0, 0xb0, 0xcc},
+	{38400, 0x90, 0xb0, 0x30, 0xcc},
+	{115200, 0x80, 0xa0, 0x30, 0x88},
+};
+
+static void duart_generic_setbrg(int baud, int port)
 {
-	switch(baud){
-	case 1200:
-	writeReg(DUART_CR, 0x90);
-	writeReg(DUART_CR, 0xB0);
-	writeReg(DUART_ACR, 0x30);
-	writeReg(DUART_CSR, 0x66);
-	break;
-	case 2400:
-	writeReg(DUART_CR, 0x90);
-	writeReg(DUART_CR, 0xB0);
-	writeReg(DUART_ACR, 0x30);
-	writeReg(DUART_CSR, 0x88);
-	break;
-	case 4800:
-	writeReg(DUART_CR, 0x90);
-	writeReg(DUART_CR, 0xB0);
-	writeReg(DUART_ACR, 0x30);
-	writeReg(DUART_CSR, 0x99);
-	break;
-	case 9600:
-	writeReg(DUART_CR, 0x90);
-	writeReg(DUART_CR, 0xB0);
-	writeReg(DUART_ACR, 0x30);
-	writeReg(DUART_CSR, 0xBB);
-	break;
-	case 19200:
-	writeReg(DUART_CR, 0x90);
-	writeReg(DUART_CR, 0xB0);
-	writeReg(DUART_ACR, 0xB0);
-	writeReg(DUART_CSR, 0xCC);
-	break;
-	case 38400:
-	writeReg(DUART_CR, 0x90);
-	writeReg(DUART_CR, 0xB0);
-	writeReg(DUART_ACR, 0x30);
-	writeReg(DUART_CSR, 0xCC);
-	break;
-	case 115200:
-	default:
-	writeReg(DUART_CR, 0x80);
-	writeReg(DUART_CR, 0xA0);
-	writeReg(DUART_ACR, 0x30);
-	writeReg(DUART_CSR, 0x88);
-	break;
+	int i;
+	
+	for(i = 0; i < ARRAY_SIZE(uart_brg_settings); i++){
+		if(baud == uart_brg_settings[i].baud){
+			writeReg(DUART_CR + port * 16, uart_brg_settings[i].cr1);
+			writeReg(DUART_CR + port * 16, uart_brg_settings[i].cr2);
+			writeReg(DUART_ACR + port * 16, uart_brg_settings[i].acr);
+			writeReg(DUART_CSR + port * 16, uart_brg_settings[i].csr);
+			return;
+		}		
 	}
+}
+
+static void duart_port_init(int port)
+{
+	writeReg(DUART_MR1 + port * 16, 0x13);
+	writeReg(DUART_MR2 + port * 16, 0x07);
+	writeReg(DUART_CR + port * 16, 0x05);
 }
 
 static int duart_serial_init(void)
 {
-	duart_generic_setbrg(CONFIG_BAUDRATE);
-	writeReg(DUART_MR1, 0x13);
-	writeReg(DUART_MR2, 0x07);
-	writeReg(DUART_CR, 0x05);
+	duart_generic_setbrg(CONFIG_BAUDRATE, 0);
+	duart_port_init(0);
+
+	duart_generic_setbrg(38400, 1);
+	duart_port_init(1);
 
 	return 0;
 }
@@ -121,7 +113,7 @@ static int duart_serial_getc(void)
 static void duart_serial_setbrg(void)
 {
 	int baud = gd->baudrate;
-	duart_generic_setbrg(baud);
+	duart_generic_setbrg(baud, 0);
 }
 
 static int duart_serial_tstc(void)
