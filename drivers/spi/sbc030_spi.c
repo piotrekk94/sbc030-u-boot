@@ -106,17 +106,17 @@ int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
 		spi_cs_activate(slave);
 
 	for(int i = 0; i < bitlen / 8; i++) {
+		u8 tx = txd ? *txd++ : 0xff;
+		u8 rx;
 
-		if(txd)
-			writeb(*txd++, ss->base + SPI_DR);
-		else
-			writeb(0xff, ss->base + SPI_DR);
+		writeb(tx, ss->base + SPI_DR);
 
 		while(!spi_check_done(ss));
 
-		if(rxd)
-			*rxd++ = readb(ss->base + SPI_DR);
+		rx = readb(ss->base + SPI_DR);
 
+		if(rxd)
+			*rxd++ = rx;
 	}
 
 	if (flags & SPI_XFER_END)
