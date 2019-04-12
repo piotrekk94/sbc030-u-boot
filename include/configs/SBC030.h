@@ -68,6 +68,10 @@
 # define CONFIG_ENV_OFFSET		(CONFIG_SYS_FLASH_SIZE - CONFIG_ENV_SECT_SIZE)
 #endif
 
+#ifdef CONFIG_ENV_IS_IN_EXT4
+# define CONFIG_ENV_SIZE		0x4000
+#endif
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"update_uboot=dhcp $kernel_addr u-boot.bin && " \
 		     "mtd erase nor0 0 40000 && " \
