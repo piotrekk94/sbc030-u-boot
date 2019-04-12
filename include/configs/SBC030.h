@@ -75,7 +75,7 @@
 	"update_font=dhcp e0083000 font.bin && " \
 		     "mtd erase nor0 $font_off 1000 && " \
 		     "mtd write nor0 e0083000 $font_off 1000\0" \
-	"kernel_sd=ext2load mmc 0:1 $kernel_addr /boot/linux.u\0" \
+	"kernel_sd=ext2load mmc 0:1 $kernel_addr /linux.u\0" \
 	"ramdisk_tftp=dhcp $ramdisk_addr ramdisk.u\0" \
 	"kernel_tftp=dhcp $kernel_addr linux.u\0" \
 	"ramdisk_addr=1000000\0" \
@@ -94,7 +94,7 @@
 	"bootmenu_3=Update Fonts using TFTP=run update_font\0" \
 	"bootmenu_delay=2\0" \
 	"bootargs=console=tty0 console=ttyS0\0" \
-	"sdargs=setenv bootargs $bootargs root=/dev/mmcblk0p1 rootwait\0" \
+	"sdargs=setenv bootargs $bootargs root=/dev/mmcblk0p2 rootwait\0" \
 	"setup_disp=mw.b e0080000 0 1000 && mtd read nor0 e0083000 $font_off 1000\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
