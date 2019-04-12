@@ -75,37 +75,31 @@
 	"update_font=dhcp e0083000 font.bin && " \
 		     "mtd erase nor0 $font_off 1000 && " \
 		     "mtd write nor0 e0083000 $font_off 1000\0" \
-	"update_kernel=sf probe 0 && " \
-		     "mw.b $kernel_addr ff $kernel_size && " \
-		     "run kernel_tftp && " \
-		     "mtd erase nor1 0 $kernel_size && " \
-		     "mtd write nor1 $kernel_addr 0 $kernel_size\0" \
-	"kernel_sf=sf probe 0 && " \
-		  "mtd read nor1 $kernel_addr 0 $kernel_size\0" \
+	"kernel_sd=ext2load mmc 0:1 $kernel_addr /boot/linux.u\0" \
 	"ramdisk_tftp=dhcp $ramdisk_addr ramdisk.u\0" \
 	"kernel_tftp=dhcp $kernel_addr linux.u\0" \
 	"ramdisk_addr=1000000\0" \
 	"kernel_addr=2000000\0" \
 	"kernel_size=200000\0" \
 	"font_off=7f000\0" \
-	"linux_sf=run ubiargs && " \
-		 "run kernel_sf && " \
+	"linux_sd=run sdargs && " \
+		 "run kernel_sd && " \
 		 "boot68 $kernel_addr\0" \
 	"linux_tftp=run ramdisk_tftp && " \
 		   "run kernel_tftp && " \
 		   "boot68 $kernel_addr $ramdisk_addr\0" \
-	"bootmenu_0=Boot Linux using NOR=run linux_sf\0" \
+	"bootmenu_0=Boot Linux using SD=run linux_sd\0" \
 	"bootmenu_1=Boot Linux using TFTP=run linux_tftp\0" \
 	"bootmenu_2=Update U-Boot using TFTP=run update_uboot\0" \
-	"bootmenu_3=Update Kernel using TFTP=run update_kernel\0" \
+	"bootmenu_3=Update Fonts using TFTP=run update_font\0" \
 	"bootmenu_delay=2\0" \
 	"bootargs=console=tty0 console=ttyS0\0" \
-	"ubiargs=setenv bootargs $bootargs ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs\0" \
+	"sdargs=setenv bootargs $bootargs root=/dev/mmcblk0p1 rootwait\0" \
 	"setup_disp=mw.b e0080000 0 1000 && mtd read nor0 e0083000 $font_off 1000\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
-	"run setup_disp && bootmenu"
+	"run setup_disp && mmc_spi 0:0 && bootmenu"
 
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16
