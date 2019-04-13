@@ -105,7 +105,7 @@
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
-	"run setup_disp && bootmenu"
+	"run setup_disp && run linux_sd"
 
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16
