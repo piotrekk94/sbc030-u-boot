@@ -37,7 +37,9 @@
 #define CONFIG_SYS_SDRAM_BASE		0x00000000
 #define CONFIG_SYS_NUM_IRQS		64
 
-#define CONFIG_MMC_SPI
+#ifdef CONFIG_MMC
+# define CONFIG_MMC_SPI
+#endif
 
 #define CONFIG_DUART
 #define CONFIG_SYS_DUART_BASE		0xf0000000
@@ -103,7 +105,7 @@
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
-	"run setup_disp && mmc_spi 0:0 && bootmenu"
+	"run setup_disp && bootmenu"
 
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16

@@ -34,6 +34,20 @@ int board_late_init(void)
 	return 0;
 }
 
+#ifdef CONFIG_MMC
+int board_mmc_init(bd_t *bis)
+{
+	int rc = 0;
+#ifdef CONFIG_MMC_SPI
+	struct mmc *mmc;
+	mmc = mmc_spi_init(0, 0, 25000000, 0);
+	if(mmc)
+		mmc_init(mmc);
+#endif
+	return rc;
+}
+#endif
+
 #ifdef CONFIG_CMD_NET
 int board_eth_init(bd_t *bis)
 {
