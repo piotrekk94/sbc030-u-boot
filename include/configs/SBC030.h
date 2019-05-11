@@ -93,7 +93,7 @@
 	"linux_tftp=run ramdisk_tftp && " \
 		   "run kernel_tftp && " \
 		   "boot68 $kernel_addr $ramdisk_addr\0" \
-	"bootargs=console=tty0 console=ttyS0\0" \
+	"bootargs=console=ttyS0 console=tty0\0" \
 	"sdargs=setenv bootargs $bootargs root=/dev/mmcblk0p1 rootwait\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
