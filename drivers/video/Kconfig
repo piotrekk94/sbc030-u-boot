@@ -722,4 +722,9 @@ config IHS_VIDEO_OUT
 	  out On-screen Display (OSD) used on gdsys FPGAs to control dynamic
 	  textual overlays of the display outputs.
 
+config SBC030_CON
+        bool "SBC030 Console"
+        help
+          SBC030 Console driver
+
 endmenu

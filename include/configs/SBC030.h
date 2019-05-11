@@ -101,11 +101,10 @@
 	"bootmenu_delay=2\0" \
 	"bootargs=console=tty0 console=ttyS0\0" \
 	"sdargs=setenv bootargs $bootargs root=/dev/mmcblk0p1 rootwait\0" \
-	"setup_disp=mw.b e0080000 0 1000 && mtd read nor0 e0083000 $font_off 1000\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
 
 #define CONFIG_BOOTCOMMAND \
-	"run setup_disp && run linux_sd"
+	"run linux_sd"
 
 /* Cache Configuration */
 #define CONFIG_SYS_CACHELINE_SIZE	16

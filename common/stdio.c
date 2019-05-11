@@ -370,7 +370,7 @@ int stdio_add_devices(void)
 # if defined(CONFIG_LCD)
 	drv_lcd_init ();
 # endif
-# if defined(CONFIG_VIDEO) || defined(CONFIG_CFB_CONSOLE)
+# if defined(CONFIG_VIDEO) || defined(CONFIG_CFB_CONSOLE) || defined(CONFIG_SBC030_CON)
 	drv_video_init ();
 # endif
 #endif /* CONFIG_DM_VIDEO */
