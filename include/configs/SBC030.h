@@ -86,7 +86,6 @@
 	"kernel_tftp=dhcp $kernel_addr linux.u\0" \
 	"ramdisk_addr=1000000\0" \
 	"kernel_addr=2000000\0" \
-	"kernel_size=200000\0" \
 	"font_off=7f000\0" \
 	"linux_sd=run sdargs && " \
 		 "run kernel_sd && " \
@@ -94,11 +93,6 @@
 	"linux_tftp=run ramdisk_tftp && " \
 		   "run kernel_tftp && " \
 		   "boot68 $kernel_addr $ramdisk_addr\0" \
-	"bootmenu_0=Boot Linux using SD=run linux_sd\0" \
-	"bootmenu_1=Boot Linux using TFTP=run linux_tftp\0" \
-	"bootmenu_2=Update U-Boot using TFTP=run update_uboot\0" \
-	"bootmenu_3=Update Fonts using TFTP=run update_font\0" \
-	"bootmenu_delay=2\0" \
 	"bootargs=console=tty0 console=ttyS0\0" \
 	"sdargs=setenv bootargs $bootargs root=/dev/mmcblk0p1 rootwait\0" \
 	"ethaddr=98:5d:ad:43:dd:38"
